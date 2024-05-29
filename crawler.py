@@ -16,7 +16,7 @@ driver = webdriver.Chrome(service = cService)
 driver.get(URL)
 
 try:
-    more_results_button = WebDriverWait(driver, 20).until(
+    more_results_button = WebDriverWait(driver, 50).until(
         EC.presence_of_element_located((By.XPATH, '//span[contains(text(), "More results")]'))
     )
 
@@ -32,13 +32,19 @@ try:
             break
         initial_height = new_height
     
+    nodes =[]
     for element in driver.find_elements(By.XPATH, '//div[@jscontroller]//span[@jscontroller]//a[@jsname]'):
         link = element.get_attribute('href')
         name = element.find_element(By.XPATH, './/h3').text
         if link not in URLS_TO_IGNORE:
-            node = json.dumps({'name': name, 'link': link})
-            print(node)
+            node = {'name': name, 'link': link}
+            nodes.append(node)
 
+    with open('data.json', 'w') as file:
+        file.write(json.dumps(nodes))
+
+except:
+    print('she broke yo')
 finally:
     driver.quit()
 
